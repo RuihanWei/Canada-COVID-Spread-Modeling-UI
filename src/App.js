@@ -1,80 +1,67 @@
-import React, { useEffect, useState } from 'react';
+mport React from 'react';
+import 'leaflet/dist/leaflet.css';
 import logo from './logo.svg';
 import './App.css';
-import Chart from './components/Chart';
-import Dropdown from 'react-dropdown';
-import 'react-dropdown/style.css';
-import Select from 'react-select';
+import { Map, TileLayer, Marker, Popup, GeoJSON } from 'react-leaflet'
+import { thistle } from 'color-name';
 
 
-function App() {
-  const[case_, setcase_] = useState("25%");
-  const[province, setprovince] = useState("Ontario");
-  const[country, setcountry] = useState("Canada");
+// type State = {
+//   lat: number,
+//   lng: number,
+//   zoom: number,
+//   data: json,
+// }
 
-  const [dates, setdates] = useState([]);
-  const [values, setvalues] = useState([]);
-  const [availableCases, setavailableCases] = useState([]);
-  const [availableProvinces, setavailableProvinces] = useState([]);
-
-  useEffect(() => {
-      fetch(`/getForecast/${case_}/${country}/${province}`).then(res => res.json()).then(data => {
-        setdates(data.dates);
-        setvalues(data.values);
-      });
-  }, []);
-  
-  useEffect(() => {
-    fetch(`/getCases/${country}/${province}`).then(res => res.json()).then(data => {
-      setavailableCases(data.cases);
-    });
-  }, []);
-
-  useEffect(() => {
-    fetch('/getProvinces').then(res => res.json()).then(data => {
-      setavailableProvinces(data.provinces);
-    });
-  }, []);
-
-  const onSelectMobility = (event) => {
-      fetch(`/getForecast/${event.value}/${country}/${province}`).then(res => res.json()).then(data => {
-        setdates(data.dates);
-        setvalues(data.values);
-      });
-
-    console.log('case changed');
-    setcase_(event.value);
+class App extends React.Component{
+  constructor(props){
+    super(props);
+    this.state = {
+      geo_data: require('./data/simplified_canada_provinces.json'),
+      data: require('./data/data.json'),
+      lat: 43.651,
+      lng: -79.347,
+      zoom: 4,
+    };
   }
 
-  const onSelectProvince = (event) => {
-    fetch(`/getCases/${case_}/${country}/${province}`).then(res => res.json()).then(data => {
-      setavailableCases(data.cases);
-    });
-    console.log('Cases changed');
-    setprovince(event.value);
+  generatePopup(place){
+    return "Forcasted Daily confirmed: "+this.state.data[place]["medians"]["daily confirmed"][0]+"<br>"+
+          this.state.data[place]["forecast_start"];
   }
 
-  var title = `case: ${case_}, country: ${country}, province: ${province}`
-  
-  let chartData = {
-    labels: dates,
-    datasets:[
-      {
-        label:'Prediction',
-        data: values
+  onEachFeature(feature, layer) {
+    if (feature.properties && feature.properties.name) {
+      switch (feature.properties.name){
+        // case "British Columbia":
+        //   layer.bindPopup(this.generatePopup.call(this, "British Columbia"));
+        //   break;
+        
+        case "Ontario":
+          layer.bindPopup(this.generatePopup.call(this, "Ontario"));
+          break;
       }
-    ]
+    }
   }
 
-  var op = ["e", "r"]
+  render(){
+    const position = [this.state.lat, this.state.lng]
 
-  return (
-    <div className="App">
-      <Dropdown options={availableProvinces} onChange={onSelectProvince} value = {province} placeholder="Select a Province" />
-      <Dropdown options={availableCases} onChange={onSelectMobility} value = {case_} placeholder="Select a mobility (percentage w.r.t. baseline)" />
-      <Chart chartData = {chartData} displayTitle={title} />
-    </div>
-  );
+    return (
+      <Map center={position} zoom={this.state.zoom}>
+      <TileLayer
+        attribution='&amp;copy <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+      />
+      <Marker position={position}>
+        <Popup>
+          A pretty CSS3 popup. <br /> Easily customizable.
+        </Popup>
+      </Marker>
+      <GeoJSON key={"tempkey"} data={this.state.geo_data} onEachFeature={this.onEachFeature.bind(this)} />
+    </Map>
+    )
+  }
 }
 
 export default App;
