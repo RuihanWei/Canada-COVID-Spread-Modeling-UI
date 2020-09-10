@@ -18,26 +18,26 @@ function App() {
   const [availableProvinces, setavailableProvinces] = useState([]);
 
   useEffect(() => {
-      fetch(`/api/getForecast/${case_}/${country}/${province}`).then(res => res.json()).then(data => {
+      fetch(encodeURI(`/api/getForecast/${case_}/${country}/${province}`)).then(res => res.json()).then(data => {
         setdates(data.dates);
         setvalues(data.values);
       });
   }, []);
   
   useEffect(() => {
-    fetch(`/api/getCases/${country}/${province}`).then(res => res.json()).then(data => {
+    fetch(encodeURI(`/api/getCases/${country}/${province}`)).then(res => res.json()).then(data => {
       setavailableCases(data.cases);
     });
   }, []);
 
   useEffect(() => {
-    fetch('/api/getProvinces').then(res => res.json()).then(data => {
+    fetch(encodeURI('/api/getProvinces')).then(res => res.json()).then(data => {
       setavailableProvinces(data.provinces);
     });
   }, []);
 
   const onSelectMobility = (event) => {
-      fetch(`/api/getForecast/${event.value}/${country}/${province}`).then(res => res.json()).then(data => {
+      fetch(encodeURI(`/api/getForecast/${event.value}/${country}/${province}`)).then(res => res.json()).then(data => {
         setdates(data.dates);
         setvalues(data.values);
       });
@@ -47,7 +47,7 @@ function App() {
   }
 
   const onSelectProvince = (event) => {
-    fetch(`/api/getCases/${case_}/${country}/${province}`).then(res => res.json()).then(data => {
+    fetch(encodeURI(`/api/getCases/${case_}/${country}/${province}`)).then(res => res.json()).then(data => {
       setavailableCases(data.cases);
     });
     console.log('Cases changed');
