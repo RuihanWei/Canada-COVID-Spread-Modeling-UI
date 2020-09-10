@@ -6,7 +6,7 @@
     },
     "proxies": {
       "/api/": {
-        "origin": "https://covid-scenario-modelling-api.herokuapp.com"
+        "origin": "https://covid-scenario-modelling-api.herokuapp.com/api/"
       }
     }
   }
