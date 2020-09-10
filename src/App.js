@@ -37,7 +37,7 @@ function App() {
   }, []);
 
   const onSelectMobility = (event) => {
-      fetch(`/getForecast/${event.value}/${country}/${province}`).then(res => res.json()).then(data => {
+      fetch(`/api/getForecast/${event.value}/${country}/${province}`).then(res => res.json()).then(data => {
         setdates(data.dates);
         setvalues(data.values);
       });
