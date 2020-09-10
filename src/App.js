@@ -18,20 +18,20 @@ function App() {
   const [availableProvinces, setavailableProvinces] = useState([]);
 
   useEffect(() => {
-      fetch(`/getForecast/${case_}/${country}/${province}`).then(res => res.json()).then(data => {
+      fetch(`/api/getForecast/${case_}/${country}/${province}`).then(res => res.json()).then(data => {
         setdates(data.dates);
         setvalues(data.values);
       });
   }, []);
   
   useEffect(() => {
-    fetch(`/getCases/${country}/${province}`).then(res => res.json()).then(data => {
+    fetch(`/api/getCases/${country}/${province}`).then(res => res.json()).then(data => {
       setavailableCases(data.cases);
     });
   }, []);
 
   useEffect(() => {
-    fetch('/getProvinces').then(res => res.json()).then(data => {
+    fetch('/api/getProvinces').then(res => res.json()).then(data => {
       setavailableProvinces(data.provinces);
     });
   }, []);
@@ -47,7 +47,7 @@ function App() {
   }
 
   const onSelectProvince = (event) => {
-    fetch(`/getCases/${case_}/${country}/${province}`).then(res => res.json()).then(data => {
+    fetch(`/api/getCases/${case_}/${country}/${province}`).then(res => res.json()).then(data => {
       setavailableCases(data.cases);
     });
     console.log('Cases changed');
